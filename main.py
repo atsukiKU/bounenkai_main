@@ -7,14 +7,17 @@ from src.scheduler import TkScheduler
 PEOPLE = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Heidi"]
 NUM_GROUPS = 3
 SPECIAL_PERSON = "Alice"
+# Images are loaded from src/assets/{Name}.png when present (e.g. src/assets/Alice.png)
 
 
 def main():
     root = Tk()
     scheduler = TkScheduler(root)
     controller = AppController(PEOPLE, NUM_GROUPS, None, scheduler)
-    # attach special person attribute for UI
+    # attach special person attribute for UI (images are loaded from src/assets/{Name}.png)
     controller.SPECIAL_PERSON = SPECIAL_PERSON
+    # map person to asset base name: Alice -> cat (src/assets/cat.b64)
+    controller.PHOTO_MAP = {"Alice": "cat"}
     ui = AppUI(root, controller)
     controller.ui = ui
     ui.refresh()
