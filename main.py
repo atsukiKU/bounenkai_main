@@ -4,8 +4,13 @@ from src.controller import AppController
 from src.scheduler import TkScheduler
 
 
-PEOPLE = ["Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Heidi"]
-NUM_GROUPS = 3
+PEOPLE = [
+    "Alice", "Bob", "Carol", "David", "Eve", "Frank", "Grace", "Heidi",
+    "Ivan", "Judy", "Mallory", "Niaj", "Olivia", "Peggy", "Quentin", "Rupert",
+    "Sybil", "Trent", "Uma", "Victor", "Wendy", "Xavier", "Yvonne", "Zach",
+    "Akira", "Hiro", "Sora", "Yuki", "Kenta", "Mika"
+]
+NUM_GROUPS = 8
 SPECIAL_PERSON = "Alice"
 # Images are loaded from src/assets/{Name}.png when present (e.g. src/assets/Alice.png)
 
