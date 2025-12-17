@@ -1,4 +1,4 @@
-import main
+import kako.main as main
 root = main.create_ui()
 app = main._app_instance
 btn = app.stop_button
