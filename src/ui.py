@@ -9,10 +9,17 @@ FONT_XL = ("Helvetica", 18, "bold")
 
 class GroupPanel(tk.Frame):
     def __init__(self, master, group_index: int):
-        super().__init__(master, bd=2, relief="ridge", padx=6, pady=6)
+        # Use fixed borderwidth and padding so the frame size doesn't jump when content changes
+        super().__init__(master, bd=2, relief="ridge", padx=6, pady=6, highlightthickness=0)
         self.group_index = group_index
+        # Title is fixed text to avoid changing layout when preview is shown
         self.title = tk.Label(self, text=f"Group {group_index + 1}", font=FONT_XL, anchor='w')
         self.title.pack(fill='x')
+        # Preview area: reserved space that will show preview name only when highlighted
+        self.preview_var = tk.StringVar(value="")
+        self.preview_label = tk.Label(self, textvariable=self.preview_var, font=FONT_LARGE, anchor='w')
+        self.preview_label.pack(fill='x')
+        # Members label below preview; reserved space keeps layout stable
         self.members_var = tk.StringVar(value="")
         self.members_label = tk.Label(self, textvariable=self.members_var, font=FONT_LARGE, anchor='w')
         self.members_label.pack(fill='x')
@@ -113,7 +120,7 @@ class AppUI:
                 self.start_btn.config(state='normal')
 
     def highlight_group(self, index: int, preview_name: Optional[str]):
-        # highlight panel visually for a brief moment
+        # highlight panel visually for a brief moment without changing layout
         for i, p in enumerate(self.group_panels):
             bg = "#ffe680" if i == index else "white"
             try:
@@ -121,13 +128,13 @@ class AppUI:
             except Exception:
                 pass
             try:
+                # set preview text only in the preview label so title remains stable
+                if i == index and preview_name:
+                    p.preview_var.set(preview_name)
+                else:
+                    p.preview_var.set("")
                 p.title.config(bg=bg)
+                p.preview_label.config(bg=bg)
                 p.members_label.config(bg=bg)
             except Exception:
                 pass
-        # show preview name only for the highlighted group, reset others to default
-        for i, p in enumerate(self.group_panels):
-            if i == index and preview_name:
-                p.title.config(text=f"Group {i+1} ← {preview_name}")
-            else:
-                p.title.config(text=f"Group {i+1}")

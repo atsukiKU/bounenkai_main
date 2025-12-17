@@ -182,20 +182,27 @@ class AppController:
             return
         total_toggles = times * 2
         state = {"count": 0}
-        default_bg = "white"
+
+        # capture original colors to restore later
+        try:
+            p = self.ui.group_panels[index]
+            orig_frame_bg = p.cget('bg')
+            orig_title_bg = p.title.cget('bg')
+            orig_preview_bg = p.preview_label.cget('bg')
+            orig_members_bg = p.members_label.cget('bg')
+        except Exception:
+            p = None
+            orig_frame_bg = orig_title_bg = orig_preview_bg = orig_members_bg = 'white'
 
         def blink_step():
-            try:
-                p = self.ui.group_panels[index]
-            except Exception:
-                p = None
             if state["count"] >= total_toggles:
-                # restore and refresh
+                # restore original colors and refresh
                 if p is not None:
                     try:
-                        p.config(bg=default_bg)
-                        p.title.config(bg=default_bg)
-                        p.members_label.config(bg=default_bg)
+                        p.config(bg=orig_frame_bg)
+                        p.title.config(bg=orig_title_bg)
+                        p.preview_label.config(bg=orig_preview_bg)
+                        p.members_label.config(bg=orig_members_bg)
                     except Exception:
                         pass
                 try:
@@ -204,11 +211,12 @@ class AppController:
                     pass
                 return
             on = (state["count"] % 2 == 0)
-            bg = color if on else default_bg
+            bg = color if on else orig_frame_bg
             if p is not None:
                 try:
                     p.config(bg=bg)
                     p.title.config(bg=bg)
+                    p.preview_label.config(bg=bg)
                     p.members_label.config(bg=bg)
                 except Exception:
                     pass
