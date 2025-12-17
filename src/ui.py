@@ -18,7 +18,8 @@ class GroupPanel(tk.Frame):
         self.members_label.pack(fill='x')
 
     def set_members(self, members: List[str]):
-        self.members_var.set(", ".join(members) if members else "(空)")
+        # When a group is empty, show nothing instead of a placeholder like "(空)".
+        self.members_var.set(", ".join(members) if members else "")
 
 
 class AppUI:
@@ -38,11 +39,6 @@ class AppUI:
         self.stop_btn = ttk.Button(ctrl_frame, text="Stop", command=self.controller.request_stop)
         self.stop_btn.pack(side="left", padx=4)
 
-        # SPECIAL_PERSON display
-        self.special_frame = ttk.Frame(ctrl_frame)
-        self.special_frame.pack(side="right")
-        self.special_label = ttk.Label(self.special_frame, text="", font=FONT_LARGE)
-        self.special_label.pack()
 
         # Groups area
         self.groups_frame = ttk.Frame(root, padding=8)
@@ -115,23 +111,6 @@ class AppUI:
                 self.start_btn.state(['!disabled'])
             except Exception:
                 self.start_btn.config(state='normal')
-        # special person display
-        special = getattr(self.controller, 'SPECIAL_PERSON', None)
-        if special and special in self.controller.people:
-            # try to show image from assets if exists
-            imgpath = os.path.join(os.path.dirname(__file__), 'assets', f"{special}.png")
-            if os.path.exists(imgpath):
-                try:
-                    from PIL import Image, ImageTk
-                    im = Image.open(imgpath).resize((64, 64))
-                    self._photo = ImageTk.PhotoImage(im)
-                    self.special_label.config(image=self._photo, text="")
-                except Exception:
-                    self.special_label.config(text=special, image='')
-            else:
-                self.special_label.config(text=special, image='')
-        else:
-            self.special_label.config(text="")
 
     def highlight_group(self, index: int, preview_name: Optional[str]):
         # highlight panel visually for a brief moment
@@ -146,8 +125,9 @@ class AppUI:
                 p.members_label.config(bg=bg)
             except Exception:
                 pass
-        # show preview name in title
-        if preview_name:
-            self.group_panels[index].title.config(text=f"Group {index+1} ← {preview_name}")
-        else:
-            self.group_panels[index].title.config(text=f"Group {index+1}")
+        # show preview name only for the highlighted group, reset others to default
+        for i, p in enumerate(self.group_panels):
+            if i == index and preview_name:
+                p.title.config(text=f"Group {i+1} ← {preview_name}")
+            else:
+                p.title.config(text=f"Group {i+1}")
